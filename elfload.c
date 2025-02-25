@@ -14,7 +14,7 @@
  */
 #include "elfload.h"
 #include <string.h>
-
+#include <sys/mman.h>
 el_status el_pread(el_ctx *ctx, void *def, size_t nb, size_t offset)
 {
     return ctx->pread(ctx, def, nb, offset) ? EL_OK : EL_EIO;
@@ -156,21 +156,45 @@ el_status el_load(el_ctx *ctx, el_alloc_cb alloc)
         char *dest = alloc(ctx, pload, vload, ph.p_memsz);
         if (!dest)
             return EL_ENOMEM;
-
-        EL_DEBUG("Loading seg fileoff %x, vaddr %x to %p\n",
-            ph.p_offset, ph.p_vaddr, dest);
-
+        EL_DEBUG("p_type: %u, p_flags: %u, p_offset: %lu, p_vaddr: %lu, p_paddr: %lu, p_filesz: %lu, p_memsz: %lu, p_align: %lu\n",
+             ph.p_type, ph.p_flags, ph.p_offset, ph.p_vaddr, ph.p_paddr, ph.p_filesz, ph.p_memsz, ph.p_align);
+        
+        
         /* read loaded portion */
         if ((rv = el_pread(ctx, dest, ph.p_filesz, ph.p_offset)))
             return rv;
-
+        EL_DEBUG("pload: %llx, vload: %llx, dest: %p\n", pload, vload, dest);
         /* zero mem-only portion */
         memset(dest + ph.p_filesz, 0, ph.p_memsz - ph.p_filesz);
-
         i++;
     }
 
     return rv;
+}
+int el_perm(el_ctx *ctx){
+    Elf_Addr pdelta = ctx->base_load_paddr;
+    Elf_Addr vdelta = ctx->base_load_vaddr;
+
+    /* iterate paddrs */
+    Elf_Phdr ph;
+    unsigned i = 0;
+    for(;;){
+        if (el_findphdr(ctx, &ph, PT_LOAD, &i)){
+            return 1;
+        }
+        if (i == (unsigned) -1){
+            break;
+        }
+        Elf_Addr pload = ph.p_paddr + pdelta;
+        Elf_Addr vload = ph.p_vaddr + vdelta;
+        if (ph.p_flags & PF_X){
+            if (mprotect((void *)vload, ph.p_memsz, PROT_READ|PROT_EXEC)){
+                return EL_MPROT;
+            }
+        }
+        i++;
+    }
+    return 0;
 }
 
 el_status el_finddyn(el_ctx *ctx, Elf_Dyn *dyn, uint32_t tag)

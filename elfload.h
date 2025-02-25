@@ -41,6 +41,7 @@ typedef enum {
     EL_NOTEXEC,
     EL_NODYN,
     EL_BADREL,
+    EL_MPROT,
 
 } el_status;
 
@@ -108,5 +109,11 @@ typedef struct {
  * sets ri->entrysize = 0 if not found
  */
 el_status el_findrelocs(el_ctx *ctx, el_relocinfo *ri, uint32_t type);
-
+/**
+ * @brief recover the permissions of the loaded binary
+ * 
+ * @param ctx 
+ * @return int 
+ */
+int el_perm(el_ctx *ctx);
 #endif

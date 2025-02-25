@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include "elfload.h"
-
+#include <sys/mman.h>
 FILE *f;
 void *buf;
 
@@ -77,13 +77,14 @@ int main(int argc, char **argv)
     ctx.pread = fpread;
 
     check(el_init(&ctx), "initialising");
-
+    
     if (posix_memalign(&buf, ctx.align, ctx.memsz)) {
         perror("memalign");
         return 1;
     }
-
-    if (mprotect(buf, ctx.memsz, PROT_READ | PROT_WRITE | PROT_EXEC)) {
+    EL_DEBUG("Allocacte Image %p with size %lld align %lld\n", buf, ctx.memsz, ctx.align);
+    
+    if (mprotect(buf, ctx.memsz, PROT_READ|PROT_WRITE)) {
         perror("mprotect");
         return 1;
     }
@@ -92,11 +93,11 @@ int main(int argc, char **argv)
 
     check(el_load(&ctx, alloccb), "loading");
     check(el_relocate(&ctx), "relocating");
-
+    check(el_perm(&ctx), "setting permissions");
     uintptr_t epaddr = ctx.ehdr.e_entry + (uintptr_t) buf;
 
     entrypoint_t ep = (entrypoint_t) epaddr;
-
+    
     printf("Binary entrypoint is %" PRIxPTR "; invoking %p\n", (uintptr_t) ctx.ehdr.e_entry, ep);
 
     go(ep);
