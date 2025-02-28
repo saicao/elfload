@@ -22,7 +22,7 @@
 
 el_status el_applyrela(el_ctx *ctx, Elf_RelA *rel)
 {
-    uintptr_t *p = (uintptr_t*) (rel->r_offset + ctx->base_load_paddr);
+    uintptr_t *p = (uintptr_t*) (rel->r_offset + ctx->sh_base_vaddr);
     uint32_t type = ELF_R_TYPE(rel->r_info);
     uint32_t sym  = ELF_R_SYM(rel->r_info);
 
@@ -37,7 +37,7 @@ el_status el_applyrela(el_ctx *ctx, Elf_RelA *rel)
             }
 
             EL_DEBUG("Applying R_AARCH64_RELATIVE reloc @%p\n", p);
-            *p = rel->r_addend + ctx->base_load_vaddr;
+            *p = rel->r_addend + ctx->target_base_vaddr;
             break;
 
         default:
@@ -51,7 +51,7 @@ el_status el_applyrela(el_ctx *ctx, Elf_RelA *rel)
 
 el_status el_applyrel(el_ctx *ctx, Elf_Rel *rel)
 {
-    uintptr_t *p = (uintptr_t*) (rel->r_offset + ctx->base_load_paddr);
+    uintptr_t *p = (uintptr_t*) (rel->r_offset + ctx->base_paddr);
     uint32_t type = ELF_R_TYPE(rel->r_info);
     uint32_t sym  = ELF_R_SYM(rel->r_info);
 
@@ -66,7 +66,7 @@ el_status el_applyrel(el_ctx *ctx, Elf_Rel *rel)
             }
 
             EL_DEBUG("Applying R_AARCH64_RELATIVE reloc @%p\n", p);
-            *p += ctx->base_load_vaddr;
+            *p += ctx->sh_base_vaddr;
             break;
 
         default:

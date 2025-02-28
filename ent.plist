@@ -7,6 +7,14 @@
     <key>com.apple.security.cs.disable-executable-page-protection</key>
     <true/>
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+    <true/> 
+    <key>com.apple.security.get-task-allow</key>
     <true/>
+    <key>com.apple.security.cs.debugger</key>
+    <true/>
+    <!-- <key>com.apple.private.thread-set-state</key>
+	<true/>
+	<key>com.apple.private.cs.debugger</key>
+	<true/> -->
 </dict>
 </plist>

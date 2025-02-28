@@ -13,8 +13,16 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 #include "elfload.h"
+#include "elf.h"
+#include <assert.h>
+#include <mach/task.h>
+#include <stdio.h>
 #include <string.h>
+#include <sys/ptrace.h>
 #include <sys/mman.h>
+#include <unistd.h>
+#include <sys/types.h>
+// #include <sys/ptrace.h>
 el_status el_pread(el_ctx *ctx, void *def, size_t nb, size_t offset)
 {
     return ctx->pread(ctx, def, nb, offset) ? EL_OK : EL_EIO;
@@ -41,6 +49,8 @@ el_status el_findphdr(el_ctx *ctx, Elf_Phdr *phdr, uint32_t type, unsigned *i)
 el_status el_init(el_ctx *ctx)
 {
     el_status rv = EL_OK;
+    ctx->loader_task= mach_task_self() ;
+
     if ((rv = el_pread(ctx, &ctx->ehdr, sizeof ctx->ehdr, 0)))
         return rv;
 
@@ -82,7 +92,6 @@ el_status el_init(el_ctx *ctx)
     Elf_Phdr ph;
 
     /* iterate through, calculate extents */
-    ctx->base_load_paddr = ctx->base_load_vaddr = 0;
     ctx->align = 1;
     ctx->memsz = 0;
 
@@ -119,6 +128,36 @@ el_status el_init(el_ctx *ctx)
         ctx->dynoff  = 0;
         ctx->dynsize = 0;
     }
+    pid_t pid=fork();
+    if (pid==0){
+        while (true)
+        {
+            printf("child init %d\n", getpid());
+            //to do notify parent???
+            sleep(1);
+        }
+        fprintf(stderr,"child %d end with unexpect\n", getpid());
+        __builtin_unreachable();
+    }else{
+        ctx->child_pid=pid;
+        kern_return_t kr ;
+        kr=task_for_pid(mach_task_self(), pid,&ctx->child_task);
+        if (kr){
+            fprintf(stderr, "task_for_pid failed: %s\n", mach_error_string(kr));
+            return EL_MACH;
+        }
+        kr=task_suspend(ctx->child_task);
+        if (kr){
+            fprintf(stderr, "task_suspend failed: %s\n", mach_error_string(kr));
+            return EL_MACH;
+        }
+        // kr=task_resume(ctx->child_task);
+        // if (kr){
+        //     fprintf(stderr, "task_resume failed: %s\n", mach_error_string(kr));
+        //     return EL_MACH;
+        // }
+    }
+
 
     return rv;
 }
@@ -136,8 +175,8 @@ el_status el_load(el_ctx *ctx, el_alloc_cb alloc)
     el_status rv = EL_OK;
 
     /* address deltas */
-    Elf_Addr pdelta = ctx->base_load_paddr;
-    Elf_Addr vdelta = ctx->base_load_vaddr;
+    // Elf_Addr pdelta = ctx->base_load_paddr;
+    // Elf_Addr vdelta = ctx->base_load_vaddr;
 
     /* iterate paddrs */
     Elf_Phdr ph;
@@ -148,10 +187,8 @@ el_status el_load(el_ctx *ctx, el_alloc_cb alloc)
 
         if (i == (unsigned) -1)
             break;
-
-        Elf_Addr pload = ph.p_paddr + pdelta;
-        Elf_Addr vload = ph.p_vaddr + vdelta;
-
+        Elf_Addr pload = ph.p_paddr;
+        Elf_Addr vload = ph.p_vaddr;
         /* allocate mem */
         char *dest = alloc(ctx, pload, vload, ph.p_memsz);
         if (!dest)
@@ -171,9 +208,9 @@ el_status el_load(el_ctx *ctx, el_alloc_cb alloc)
 
     return rv;
 }
-int el_perm(el_ctx *ctx){
-    Elf_Addr pdelta = ctx->base_load_paddr;
-    Elf_Addr vdelta = ctx->base_load_vaddr;
+int el_perm(el_ctx *ctx,el_mprotect_cb mprotect){
+    // Elf_Addr pdelta;
+    // Elf_Addr vdelta;
 
     /* iterate paddrs */
     Elf_Phdr ph;
@@ -185,10 +222,8 @@ int el_perm(el_ctx *ctx){
         if (i == (unsigned) -1){
             break;
         }
-        Elf_Addr pload = ph.p_paddr + pdelta;
-        Elf_Addr vload = ph.p_vaddr + vdelta;
         if (ph.p_flags & PF_X){
-            if (mprotect((void *)vload, ph.p_memsz, PROT_READ|PROT_EXEC)){
+            if (mprotect(ctx,ph.p_vaddr, ph.p_memsz, PROT_READ|PROT_EXEC)){
                 return EL_MPROT;
             }
         }
@@ -255,10 +290,11 @@ el_status el_relocate(el_ctx *ctx)
     if (ctx->ehdr.e_type != ET_DYN)
         return EL_OK;
 
-    char *base = (char *) ctx->base_load_paddr;
+    char *base = (char *) ctx->base_paddr;
 
     el_relocinfo ri;
 #ifdef EL_ARCH_USES_REL
+    //# not test
     if ((rv = el_findrelocs(ctx, &ri, DT_REL)))
         return rv;
 

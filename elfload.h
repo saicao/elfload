@@ -19,7 +19,8 @@
 #include <stddef.h>
 #include "elfarch.h"
 #include "elf.h"
-
+#include <mach/mach.h>
+#include <mach/mach_vm.h>
 #ifdef DEBUG
 #include <stdio.h>
 #define EL_DEBUG(...) printf(__VA_ARGS__)
@@ -42,17 +43,25 @@ typedef enum {
     EL_NODYN,
     EL_BADREL,
     EL_MPROT,
+    EL_PTRACE,
+    EL_MACH,
+    EL_NOTIMPL,
 
 } el_status;
 
 typedef struct el_ctx {
     bool (*pread)(struct el_ctx *ctx, void *dest, size_t nb, size_t offset);
-
+    int child_pid;
+    mach_port_t loader_task;
+    mach_port_t child_task;
     /* base_load_* -> address we are actually going to load at
      */
-    Elf_Addr
-        base_load_paddr,
-        base_load_vaddr;
+    // Elf_Addr base_load_paddr;
+    // Elf_Addr base_load_vaddr;
+    Elf_Addr base_paddr;
+    Elf_Addr target_base_vaddr;
+    Elf_Addr sh_base_vaddr;
+
 
     /* size in memory of binary */
     Elf_Addr memsz;
@@ -77,6 +86,11 @@ typedef void* (*el_alloc_cb)(
     Elf_Addr phys,
     Elf_Addr virt,
     Elf_Addr size);
+typedef int (*el_mprotect_cb)(
+    el_ctx *ctx,
+    Elf_Addr addr,
+    size_t size,
+    int prot);
 
 el_status el_load(el_ctx *ctx, el_alloc_cb alloccb);
 
@@ -115,5 +129,5 @@ el_status el_findrelocs(el_ctx *ctx, el_relocinfo *ri, uint32_t type);
  * @param ctx 
  * @return int 
  */
-int el_perm(el_ctx *ctx);
+int el_perm(el_ctx *ctx,el_mprotect_cb mprotect);
 #endif

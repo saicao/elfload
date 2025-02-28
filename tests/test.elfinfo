@@ -1,0 +1,159 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Position-Independent Executable file)
+  Machine:                           AArch64
+  Version:                           0x1
+  Entry point address:               0x278
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          66568 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         7
+  Size of section headers:           64 (bytes)
+  Number of section headers:         15
+  Section header string table index: 14
+
+Section Headers:
+  [Nr] Name              Type             Address           Offset
+       Size              EntSize          Flags  Link  Info  Align
+  [ 0]                   NULL             0000000000000000  00000000
+       0000000000000000  0000000000000000           0     0     0
+  [ 1] .interp           PROGBITS         00000000000001c8  000001c8
+       000000000000001b  0000000000000000   A       0     0     1
+  [ 2] .note.gnu.bu[...] NOTE             00000000000001e4  000001e4
+       0000000000000024  0000000000000000   A       0     0     4
+  [ 3] .gnu.hash         GNU_HASH         0000000000000208  00000208
+       000000000000001c  0000000000000000   A       4     0     8
+  [ 4] .dynsym           DYNSYM           0000000000000228  00000228
+       0000000000000030  0000000000000018   A       5     2     8
+  [ 5] .dynstr           STRTAB           0000000000000258  00000258
+       0000000000000001  0000000000000000   A       0     0     1
+  [ 6] .rela.dyn         RELA             0000000000000260  00000260
+       0000000000000018  0000000000000018   A       4     0     8
+  [ 7] .text             PROGBITS         0000000000000278  00000278
+       0000000000000028  0000000000000000  AX       0     0     8
+  [ 8] .rodata           PROGBITS         00000000000002a0  000002a0
+       000000000000001f  0000000000000000   A       0     0     1
+  [ 9] .dynamic          DYNAMIC          000000000001fec0  0000fec0
+       0000000000000120  0000000000000010  WA       5     0     8
+  [10] .got              PROGBITS         000000000001ffe0  0000ffe0
+       0000000000000008  0000000000000008  WA       0     0     8
+  [11] .got.plt          PROGBITS         000000000001ffe8  0000ffe8
+       0000000000000018  0000000000000008  WA       0     0     8
+  [12] .symtab           SYMTAB           0000000000000000  00010000
+       00000000000002e8  0000000000000018          13    23     8
+  [13] .strtab           STRTAB           0000000000000000  000102e8
+       000000000000009e  0000000000000000           0     0     1
+  [14] .shstrtab         STRTAB           0000000000000000  00010386
+       000000000000007f  0000000000000000           0     0     1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  D (mbind), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  PHDR           0x0000000000000040 0x0000000000000040 0x0000000000000040
+                 0x0000000000000188 0x0000000000000188  R      0x8
+  INTERP         0x00000000000001c8 0x00000000000001c8 0x00000000000001c8
+                 0x000000000000001b 0x000000000000001b  R      0x1
+      [Requesting program interpreter: /lib/ld-linux-aarch64.so.1]
+  LOAD           0x0000000000000000 0x0000000000000000 0x0000000000000000
+                 0x00000000000002bf 0x00000000000002bf  R E    0x10000
+  LOAD           0x000000000000fec0 0x000000000001fec0 0x000000000001fec0
+                 0x0000000000000140 0x0000000000000140  RW     0x10000
+  DYNAMIC        0x000000000000fec0 0x000000000001fec0 0x000000000001fec0
+                 0x0000000000000120 0x0000000000000120  RW     0x8
+  NOTE           0x00000000000001e4 0x00000000000001e4 0x00000000000001e4
+                 0x0000000000000024 0x0000000000000024  R      0x4
+  GNU_RELRO      0x000000000000fec0 0x000000000001fec0 0x000000000001fec0
+                 0x0000000000000140 0x0000000000000140  R      0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.gnu.build-id .gnu.hash .dynsym .dynstr .rela.dyn .text .rodata 
+   03     .dynamic .got .got.plt 
+   04     .dynamic 
+   05     .note.gnu.build-id 
+   06     .dynamic .got .got.plt 
+
+Dynamic section at offset 0xfec0 contains 14 entries:
+  Tag        Type                         Name/Value
+ 0x000000006ffffef5 (GNU_HASH)           0x208
+ 0x0000000000000005 (STRTAB)             0x258
+ 0x0000000000000006 (SYMTAB)             0x228
+ 0x000000000000000a (STRSZ)              1 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000015 (DEBUG)              0x0
+ 0x0000000000000007 (RELA)               0x260
+ 0x0000000000000008 (RELASZ)             24 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x0000000000000016 (TEXTREL)            0x0
+ 0x000000000000001e (FLAGS)              TEXTREL
+ 0x000000006ffffffb (FLAGS_1)            Flags: PIE
+ 0x000000006ffffff9 (RELACOUNT)          1
+ 0x0000000000000000 (NULL)               0x0
+
+Relocation section '.rela.dyn' at offset 0x260 contains 1 entry:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000298  000000000403 R_AARCH64_RELATIV                    2a0
+
+The decoding of unwind sections for machine type AArch64 is not currently supported.
+
+Symbol table '.dynsym' contains 2 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 0000000000000278     0 SECTION LOCAL  DEFAULT    7 .text
+
+Symbol table '.symtab' contains 31 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 00000000000001c8     0 SECTION LOCAL  DEFAULT    1 .interp
+     2: 00000000000001e4     0 SECTION LOCAL  DEFAULT    2 .note.gnu.build-id
+     3: 0000000000000208     0 SECTION LOCAL  DEFAULT    3 .gnu.hash
+     4: 0000000000000228     0 SECTION LOCAL  DEFAULT    4 .dynsym
+     5: 0000000000000258     0 SECTION LOCAL  DEFAULT    5 .dynstr
+     6: 0000000000000260     0 SECTION LOCAL  DEFAULT    6 .rela.dyn
+     7: 0000000000000278     0 SECTION LOCAL  DEFAULT    7 .text
+     8: 00000000000002a0     0 SECTION LOCAL  DEFAULT    8 .rodata
+     9: 000000000001fec0     0 SECTION LOCAL  DEFAULT    9 .dynamic
+    10: 000000000001ffe0     0 SECTION LOCAL  DEFAULT   10 .got
+    11: 000000000001ffe8     0 SECTION LOCAL  DEFAULT   11 .got.plt
+    12: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS test-e02455.o
+    13: 0000000000000278     0 NOTYPE  LOCAL  DEFAULT    7 $x.0
+    14: 000000000000000f     0 NOTYPE  LOCAL  DEFAULT  ABS message_len
+    15: 00000000000002a0     0 NOTYPE  LOCAL  DEFAULT    8 message
+    16: 00000000000002a0     0 NOTYPE  LOCAL  DEFAULT    8 $d.1
+    17: 00000000000002af     0 NOTYPE  LOCAL  DEFAULT    8 sys_write
+    18: 00000000000002b7     0 NOTYPE  LOCAL  DEFAULT    8 sys_exit
+    19: 0000000000000298     0 NOTYPE  LOCAL  DEFAULT    7 $d.2
+    20: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS 
+    21: 000000000001fec0     0 OBJECT  LOCAL  DEFAULT  ABS _DYNAMIC
+    22: 000000000001ffe0     0 OBJECT  LOCAL  DEFAULT  ABS _GLOBAL_OFFSET_TABLE_
+    23: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 _bss_end__
+    24: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 __bss_start__
+    25: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 __bss_end__
+    26: 0000000000000278     0 NOTYPE  GLOBAL DEFAULT    7 _start
+    27: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 __bss_start
+    28: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 __end__
+    29: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 _edata
+    30: 0000000000020000     0 NOTYPE  GLOBAL DEFAULT   11 _end
+
+No version information found in this file.
+
+Displaying notes found in: .note.gnu.build-id
+  Owner                Data size 	Description
+  GNU                  0x00000014	NT_GNU_BUILD_ID (unique build ID bitstring)
+    Build ID: 8a130de04053102da3c0ca5198cc9c96c367dc37
